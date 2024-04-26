@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+#config.js holding API key
+/src/config.js
+# key: d5b6e0c742f6cedc82f6ddf6bf5206e2
+# secret: 231029065161b881

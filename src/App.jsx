@@ -1,34 +1,72 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from "react";
+import { Route, Routes, Navigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
+import axios from "axios"
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+// import apiKey 
+import apiKey from "./config.js"
 
+// import components
+import Nav from "./components/Nav.jsx"
+import Search from "./components/Search.jsx"
+import PhotoList from "./components/PhotoList.jsx"
+import NoPhotos from "./components/NoPhotos.jsx"
+
+function App() {
+  const [photo, setPhotos] = useState([]);
+  const [query, setQuery] = useState("");
+
+  const location = useLocation();
+  let navigate = useNavigate();
+
+  // fetch data from API
+  const fetchData = (query) => {
+    axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&sort=relevance&per_page=24&format=json&nojsoncallback=1`)
+      .then(response => {
+        setPhotos(response.data.photos.photo)
+      })
+      .catch(error => {
+        console.log("Error fetching and parsing data", error)
+      }), [query];
+  }
+  // handle query 
+  const handleQuery = (searchText) => {
+    setQuery(searchText);
+    navigate(`search/${searchText}`)
+  }
+
+  // useEffect to display path
+  useEffect(() => {
+    let path = location.pathname.substring(1);
+
+    if (path === 'food') {
+      fetchData('food');
+    } else if (path === 'yellow') {
+      fetchData('yellow');
+    } else if (path === 'chickens') {
+      fetchData('chickens');
+    } else if (path.includes('search/')) {
+      path = location.pathname.substring(8);
+    } fetchData('path');
+  }, [location]);
+
+  // 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="container">
+      <Search changeQuery={handleQuery} />
+      <Nav />
+
+      <Routes>
+        <Route path="/" element={<Navigate replace to="/food" />} />
+
+        <Route path="/food" element={<PhotoList data={photo} />} />
+        <Route path="/yellow" element={<PhotoList data={photo} />} />
+        <Route path="/chickens" element={<PhotoList data={photo} />} />
+        <Route path="/search/:query" element={<PhotoList data={photo} />} />
+        <Route path="*" element={<NoPhotos />} />
+      </Routes>
+    </div>
   )
 }
 
