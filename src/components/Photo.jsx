@@ -1,5 +1,6 @@
 import React from 'react';
 
+// set image source for display
 const Photo = ({ photo }) => {
     return (
         <ul>

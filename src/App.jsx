@@ -24,50 +24,54 @@ function App() {
   const fetchData = (query) => {
     axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&sort=relevance&per_page=24&format=json&nojsoncallback=1`)
       .then(response => {
-        setPhotos(response.data.photos.photo)
+        setPhotos(response.data.photos.photo);
       })
-      .catch(error => {
-        console.log("Error fetching and parsing data", error)
-      }), [query];
-  }
-  // handle query 
-  const handleQuery = (searchText) => {
-    setQuery(searchText);
-    navigate(`search/${searchText}`)
-  }
+      .catch (error => {
+    console.log("Error fetching and parsing data", error);
+  }, [query]);
+};
 
-  // useEffect to display path
-  useEffect(() => {
-    let path = location.pathname.substring(1);
 
-    if (path === 'food') {
-      fetchData('food');
-    } else if (path === 'yellow') {
-      fetchData('yellow');
-    } else if (path === 'chickens') {
-      fetchData('chickens');
-    } else if (path.includes('search/')) {
-      path = location.pathname.substring(8);
-    } fetchData('path');
-  }, [location]);
+// handle query 
+const handleQuery = (searchText) => {
+  setQuery(searchText);
+  navigate(`search/${searchText}`)
+};
 
-  // 
-  return (
-    <div className="container">
-      <Search changeQuery={handleQuery} />
-      <Nav />
 
-      <Routes>
-        <Route path="/" element={<Navigate replace to="/food" />} />
+// get the correct path name and call fetchData using it
+useEffect(() => {
+  let path = location.pathname.substring(1);
 
-        <Route path="/food" element={<PhotoList data={photo} />} />
-        <Route path="/yellow" element={<PhotoList data={photo} />} />
-        <Route path="/chickens" element={<PhotoList data={photo} />} />
-        <Route path="/search/:query" element={<PhotoList data={photo} />} />
-        <Route path="*" element={<NoPhotos />} />
-      </Routes>
-    </div>
-  )
+  if (path === 'food') {
+    fetchData('food');
+  } else if (path === 'yellow') {
+    fetchData('yellow');
+  } else if (path === 'chickens') {
+    fetchData('chickens');
+  } else if (path.includes('search/')) {
+    path = location.pathname.substring(8);
+  } fetchData(path);
+}, [location]);
+
+// display appropriate results on page
+return (
+  <div className="container">
+    <Search changeQuery={handleQuery} />
+    <Nav />
+
+    <Routes>
+      // set initial load to "food" to have something on dispaly on page load
+      <Route path="/" element={<Navigate replace to="/food" />} />
+
+      <Route path="/food" element={<PhotoList data={photo} />} />
+      <Route path="/yellow" element={<PhotoList data={photo} />} />
+      <Route path="/chickens" element={<PhotoList data={photo} />} />
+      <Route path="/search/:query" element={<PhotoList data={photo} />} />
+      <Route path="*" element={<NoPhotos />} />
+    </Routes>
+  </div>
+)
 }
 
 export default App
