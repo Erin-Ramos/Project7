@@ -26,52 +26,47 @@ function App() {
       .then(response => {
         setPhotos(response.data.photos.photo);
       })
-      .catch (error => {
-    console.log("Error fetching and parsing data", error);
-  }, [query]);
-};
+      .catch(error => {
+        console.log("Error fetching and parsing data", error);
+      }, [query]);
+  };
 
 
-// handle query 
-const handleQuery = (searchText) => {
-  setQuery(searchText);
-  navigate(`search/${searchText}`)
-};
+  // handle query 
+  const handleQuery = (searchText) => {
+    setQuery(searchText);
+    fetchData(searchText);
+    navigate(`search/${searchText}`)
+  };
 
 
-// get the correct path name and call fetchData using it
-useEffect(() => {
-  let path = location.pathname.substring(1);
+  // useEffect to fetch data when path name changes
+  useEffect(() => {
+    let path = location.pathname.substring(1);
 
-  if (path === 'food') {
-    fetchData('food');
-  } else if (path === 'yellow') {
-    fetchData('yellow');
-  } else if (path === 'chickens') {
-    fetchData('chickens');
-  } else if (path.includes('search/')) {
-    path = location.pathname.substring(8);
-  } fetchData(path);
-}, [location]);
+    if (path === 'food' || path === 'yellow' || path === 'chickens') {
+      fetchData(path);
+    }
+  }, [location]);
 
-// display appropriate results on page
-return (
-  <div className="container">
-    <Search changeQuery={handleQuery} />
-    <Nav />
+  // display appropriate results on page
+  return (
+    <div className="container">
+      <Search changeQuery={handleQuery} />
+      <Nav />
 
-    <Routes>
+      <Routes>
       // set initial load to "food" to have something on dispaly on page load
-      <Route path="/" element={<Navigate replace to="/food" />} />
+        <Route path="/" element={<Navigate replace to="/food" />} />
 
-      <Route path="/food" element={<PhotoList data={photo} />} />
-      <Route path="/yellow" element={<PhotoList data={photo} />} />
-      <Route path="/chickens" element={<PhotoList data={photo} />} />
-      <Route path="/search/:query" element={<PhotoList data={photo} />} />
-      <Route path="*" element={<NoPhotos />} />
-    </Routes>
-  </div>
-)
+        <Route path="/food" element={<PhotoList data={photo} />} />
+        <Route path="/yellow" element={<PhotoList data={photo} />} />
+        <Route path="/chickens" element={<PhotoList data={photo} />} />
+        <Route path="/search/:query" element={<PhotoList data={photo} />} />
+        <Route path="*" element={<NoPhotos />} />
+      </Routes>
+    </div>
+  )
 }
 
 export default App
