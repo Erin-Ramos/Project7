@@ -5,10 +5,10 @@ import axios from "axios"
 import './App.css'
 
 // import apiKey 
-// import apiKey from "./config.js"
+import apiKey from "./config.js"
 
 // apiKey from Railway environment variable
-const apiKey = process.env.API_KEY;
+// const apiKey = process.env.API_KEY;
 
 // import components
 import Nav from "./components/Nav.jsx"
